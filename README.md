@@ -46,7 +46,7 @@ curl "http://0.0.0.0:4001/receive-message?queue=test&message=test[501-1000]"
 
 # Test using Docker and Docker-Compose
 
-I build a quick dockerfile and docker-compose file to build this in a docker container as well as a nginx proxy to ahndle load balancing the service which will work fine for running locally with Docker Engine.
+I build a quick dockerfile and docker-compose file to build this in a docker container as well as a nginx proxy to handle load balancing the service which will work fine for running locally with Docker Engine.
 
 This does expose it to port 4000 so if something else is running on that port you might need to update the docker-compose.yml file to another port.
 
