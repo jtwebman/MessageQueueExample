@@ -1,6 +1,8 @@
 # MessageQueueExample
 
-This is an exmple code I built in Elixir with the following requirements:
+This is example code I built in Elixir for building a simple queue.
+
+Following requirements:
 
 1. Your application can be based on Phoenix or can be a simple Plug based web server.
 2. You should have an HTTP endpoint at the path /receive-message which accepts a GET request with the query string parameters queue (string) message (string).
@@ -8,9 +10,15 @@ This is an exmple code I built in Elixir with the following requirements:
 4. Your application should "process" the messages by printing the message text to the terminal, however for each queue, your application should only "process" one message a second, no matter how quickly the messages are submitted to the HTTP endpoint.
 5. Bonus points for writing some kind of test that verifies messages are only processed one per second.
 
+Please provide any feedback as for the most part I have just used Elixir Phoenix and haven't done as much with GenServers.
+
 # Better solution
 
-In this code I wrote code to pass queues to other nodes in the cluster but if this needed to run in production and you can't lose messages you would need to store the messages in a DB and then marked them processed or delete after they are processed. This way if a node the queues on that node could just query the DB on starting on another node. I wrote a handoff that works for this emaple but it has many issues.
+In this code I wrote code to pass queues to another node in the cluster but if this needed to run in production and you can't lose messages you would need to store the messages in a DB and then marked them processed or delete after they are processed. If not an all nodes went down you could lose messages. 
+
+Also my node switching code would not guarantee order if the service was under heavy load and a node went down.
+
+Last the queue is a list in the GenServer. This might have performance issues on adding messages to the end of the list if the queue was huge but I figure no reason to optimize it yet till it becomes an issue.
 
 # Mix Tests
 
