@@ -14,9 +14,9 @@ Please provide any feedback as for the most part I have just used Elixir Phoenix
 
 # Better solution
 
-In this code I wrote code to pass queues to another node in the cluster but if this needed to run in production and you can't lose messages you would need to store the messages in a DB and then marked them processed or delete after they are processed. If not an all nodes went down you could lose messages. 
+In this code I wrote code to pass queues to another node in the cluster but if this needed to run in production and you can't lose messages you would need to store the messages in a DB and then marked them processed or delete after they are processed. If you didn't do that and all nodes went down you could lose messages. 
 
-Also my node switching code would not guarantee order if the service was under heavy load and a node went down.
+Also my node switching code would not guarantee order if the service was under heavy load and a node went down as the handoff is delayed.
 
 Last the queue is a list in the GenServer. This might have performance issues on adding messages to the end of the list if the queue was huge but I figure no reason to optimize it yet till it becomes an issue.
 
