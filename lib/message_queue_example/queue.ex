@@ -54,9 +54,8 @@ defmodule MessageQueueExample.Queue do
   # Init genserver with name and empty message list as well as start worker task
   @impl true
   def init({name, delay_in_milliseconds, call_on}) do
-    IO.puts("Start queue #{name}")
     Process.flag(:trap_exit, true)
-    {:ok, {name, [], nil}, {:continue, {:worker, name, delay_in_milliseconds, call_on}}}
+    {:ok, {name, :queue.new(), nil}, {:continue, {:worker, name, delay_in_milliseconds, call_on}}}
   end
 
   # if call on is not passed just start queue only
@@ -77,25 +76,25 @@ defmodule MessageQueueExample.Queue do
   # Handle the add message cast
   @impl true
   def handle_cast({:add, message}, {name, messages, worker_pid}) do
-    {:noreply, {name, messages ++ [message], worker_pid}}
+    {:noreply, {name, :queue.in(message, messages), worker_pid}}
   end
 
   # Handle handoff to other nodes on shutdown
   @impl true
   def handle_call({:handoff, handoff_messages}, _from, {name, messages, worker_pid}) do
-    {:reply, :ok, {name, handoff_messages ++ messages, worker_pid}}
-  end
-
-  # Handle the get next message call with no messages
-  @impl true
-  def handle_call(:next, _from, {name, [], worker_pid}) do
-    {:reply, :none, {name, [], worker_pid}}
+    {:reply, :ok, {name, :queue.join(handoff_messages, messages), worker_pid}}
   end
 
   # Handle the get next message call
   @impl true
-  def handle_call(:next, _from, {name, [next_message | messages], worker_pid}) do
-    {:reply, {:ok, next_message}, {name, messages, worker_pid}}
+  def handle_call(:next, _from, {name, messages, worker_pid}) do
+    case :queue.out(messages) do
+      {{:value, next_message}, new_messages} ->
+        {:reply, {:ok, next_message}, {name, new_messages, worker_pid}}
+
+      _ ->
+        {:reply, :none, {name, messages, worker_pid}}
+    end
   end
 
   # Handle genserver terminate by handing it off to another node

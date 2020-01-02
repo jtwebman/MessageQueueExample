@@ -18,8 +18,6 @@ In this code I wrote code to pass queues to another node in the cluster but if t
 
 Also my node switching code would not guarantee order if the service was under heavy load and a node went down as the handoff is delayed.
 
-Last the queue is a list in the GenServer. This might have performance issues on adding messages to the end of the list if the queue was huge but I figure no reason to optimize it yet till it becomes an issue.
-
 # Mix Tests
 
 It doesn't have the best coverage but I will add more later if need be
